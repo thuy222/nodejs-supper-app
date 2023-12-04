@@ -1,32 +1,22 @@
-const mongoose = require("mongoose");
+const User = require("../models/userModel");
 
-// Declare the Schema of the Mongo model. Short cut: !mdbum
-var userSchema = new mongoose.Schema({
-  firstName: {
-    type: String,
-    required: true,
-    index: true,
-  },
-  lastName: {
-    type: String,
-    required: true,
-    index: true,
-  },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  mobile: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  password: {
-    type: String,
-    required: true,
-  },
-});
+const createUser = async (req, res) => {
+  const { email, phone, firstName, lastName } = req.body;
 
-//Export the model
-module.exports = mongoose.model("User", userSchema);
+  const findUser = await User.findOne({ email });
+
+  if (findUser) {
+    res.json({
+      msg: "User already exist",
+      success: false,
+    });
+
+    //User already exist
+  } else {
+    //create user
+    const newUser = await User.create(req.body);
+    res.json(newUser);
+  }
+};
+
+module.exports = createUser;
